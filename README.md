@@ -1,16 +1,17 @@
-# Engenharia de Dados — Lakehouse para Sistema de Despachos
+# Engenharia de Dados — Lakehouse para Sistema de Despachos (SED)
 
-[![Python](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
-[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
-[![Docs](https://img.shields.io/badge/docs-mkdocs-blue)](https://TiagoPalacio.github.io/Projeto_Eng_de_dados/)
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![uv](https://img.shields.io/endpoint?style=flat-square&url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![Spark](https://img.shields.io/badge/Apache_Spark-E25A1C?style=flat-square&logo=apache-spark&logoColor=white)](https://spark.apache.org/)
+[![MkDocs](https://img.shields.io/badge/Docs-MkDocs-526CFE?style=flat-square&logo=material-for-mkdocs&logoColor=white)](https://TiagoPalacio.github.io/Projeto_Eng_de_dados/)
 
-Repositório desenvolvido para o trabalho de pesquisa da disciplina de Arquitetura de Dados. O projeto demonstra a criação e manipulação de dados transacionais utilizando **Apache Spark**, **Delta Lake** e **Apache Iceberg** em um ambiente Python local, simulando as operações de um aplicativo de logística e despachos.
+Repositório desenvolvido para fins de pesquisa e aplicação prática na disciplina de Arquitetura de Dados. Este projeto demonstra a construção de uma arquitetura Lakehouse para o processamento de dados transacionais, utilizando **Apache Spark**, **Delta Lake** e **Apache Iceberg**. O ambiente simula as operações de backend e engenharia de dados necessárias para suportar as demandas de Sistemas Eletrônicos de Despachos (SED) e aplicativos de logística.
 
 ---
 
-## 🏗️ Desenho de Arquitetura
+## 🏗️ Arquitetura da Solução
 
-O fluxo do projeto consiste na modelagem de um banco de dados transacional (tabelas `motoristas` e `corridas`). O Apache Spark atua como motor de processamento, aplicando comandos DML (Insert, Update, Delete) diretamente nas camadas de armazenamento Delta e Iceberg para comprovar a eficácia das transações ACID.
+O fluxo de dados consiste na modelagem de um banco de dados transacional focado em entidades de logística (tabelas `motoristas` e `corridas`). O Apache Spark opera como o motor de processamento distribuído, executando comandos DML (Insert, Update, Delete) diretamente nas camadas de armazenamento (Delta e Iceberg). O objetivo principal é validar e comparar a eficácia das transações ACID em diferentes formatos de tabela aberta.
 
 ```mermaid
 graph LR
@@ -30,135 +31,124 @@ graph LR
 
 ---
 
-## 🛠️ Pré-requisitos e Ferramentas
+## 🛠️ Stack Tecnológico e Pré-requisitos
+
+Para garantir o funcionamento adequado do projeto, certifique-se de que seu ambiente atende às especificações abaixo:
 
 | Componente | Detalhe |
-|---|---|
-| **Sistema Operacional** | Windows (com scripts de adaptação nativos) / Linux / macOS |
+| :--- | :--- |
+| **Sistema Operacional** | Windows (scripts de injeção de dependência nativos) / Linux / macOS |
 | **Linguagem** | Python 3.11 |
-| **Runtime** | Java 17 (Microsoft OpenJDK) — Obrigatório para o motor do Spark |
-| **Gerenciador de Pacotes** | uv |
+| **Runtime** | Java 17 (Microsoft OpenJDK recomendado) — *Obrigatório para o Apache Spark* |
+| **Gerenciamento de Pacotes**| `uv` (Fast Python package installer) |
 | **Processamento** | PySpark (v3.5.1) |
-| **Lakehouse** | Delta-Spark (v3.2.0) e PyIceberg |
-| **Ambiente/IDE** | Visual Studio Code (com extensões Python e Jupyter) |
+| **Armazenamento Lakehouse** | Delta-Spark (v3.2.0) e PyIceberg |
 | **Documentação** | MkDocs (Material Theme) |
 
 ---
 
-## ⚙️ Instalação e Configuração
+## ⚙️ Instalação e Configuração do Ambiente
 
-### 1. Instalar o gerenciador uv (caso não possua)
+### 1. Instalação do gerenciador `uv`
+Utilizamos o `uv` para garantir alta velocidade e isolamento rigoroso das dependências do projeto.
 
-Utilizamos o uv para garantir a velocidade e o isolamento das dependências.
-
-**No Windows (PowerShell):**
+**Windows (PowerShell):**
 ```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+powershell -ExecutionPolicy ByPass -c "irm [https://astral.sh/uv/install.ps1](https://astral.sh/uv/install.ps1) | iex"
 ```
 
-**No Linux / macOS / Git Bash:**
+**Linux / macOS / Git Bash:**
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+curl -LsSf [https://astral.sh/uv/install.sh](https://astral.sh/uv/install.sh) | sh
 ```
 
----
-
-### 2. Clonar o repositório
-
+### 2. Clonagem do Repositório
 ```bash
-git clone https://github.com/TiagoPalacio/Projeto_Eng_de_dados.git
+git clone [https://github.com/TiagoPalacio/Projeto_Eng_de_dados.git](https://github.com/TiagoPalacio/Projeto_Eng_de_dados.git)
 cd Projeto_Eng_de_dados
 ```
 
----
-
-### 3. Sincronizar o ambiente virtual
-
-Execute o comando abaixo para criar o `.venv` e instalar todas as bibliotecas necessárias forçando a versão correta do Python:
-
+### 3. Sincronização do Ambiente Virtual
+O comando a seguir criará automaticamente o `.venv` e instalará as dependências, forçando o uso da versão correta do interpretador Python:
 ```bash
 uv sync --python 3.11
 ```
 
 ---
 
-## ▶️ Como Executar Localmente
+## ▶️ Execução Local
 
-Todo o código foi estruturado em Jupyter Notebooks para facilitar a visualização passo a passo das operações no banco de dados.
+O código está estruturado em Jupyter Notebooks para facilitar a análise interativa e a depuração das operações de banco de dados.
 
-1. Abra a pasta do projeto no **Visual Studio Code**  
-2. Certifique-se de selecionar o kernel do ambiente virtual (`.venv`) gerado pelo uv no canto superior direito da interface  
-3. **Para testar o Delta Lake:** Abra o arquivo `delta_lakehouse.ipynb` e execute as células  
-4. **Para testar o Apache Iceberg:** Abra o arquivo `iceberg_lakehouse.ipynb` e execute as células  
+1. Abra o diretório do projeto no **Visual Studio Code**.
+2. No canto superior direito do notebook, selecione o kernel correspondente ao ambiente virtual recém-criado (`.venv`).
+3. **Validação Delta Lake:** Abra `delta_lakehouse.ipynb` e execute as células sequencialmente.
+4. **Validação Apache Iceberg:** Abra `iceberg_lakehouse.ipynb` e execute as células sequencialmente.
 
-> **Nota para usuários Windows:**  
-> Não é necessário configurar o `HADOOP_HOME` manualmente. Os notebooks possuem um script inicial que faz o download e a injeção automática dos binários `winutils.exe` e `hadoop.dll` em tempo de execução.
-
----
-
-## ⚠️ Solução de Problemas Comuns
-
-- **Erro no Java/Py4J ao iniciar o Spark:**  
-  Se a primeira execução de uma célula falhar informando erros relacionados ao Hadoop ou Py4J, basta clicar no botão **Restart** (Reiniciar Kernel) no topo da interface do Jupyter no VS Code e rodar a célula novamente. Isso limpa a memória e permite que o script do Windows injete os binários corretamente.
-
-- **Pastas de Warehouse:**  
-  As pastas `spark-warehouse` e `iceberg_warehouse` são geradas automaticamente na raiz do projeto ao executar as células de criação das tabelas. Elas estão ignoradas no `.gitignore` para não pesar o repositório.
+> **Aviso para usuários de Windows:** Não é necessário configurar a variável de ambiente `HADOOP_HOME` manualmente. Os notebooks contêm um script de inicialização que realiza o download e a injeção dos binários `winutils.exe` e `hadoop.dll` em tempo de execução.
 
 ---
 
-## 📚 Documentação (MkDocs)
+## ⚠️ Solução de Problemas Comuns (Troubleshooting)
 
-A base de conhecimento, incluindo o Modelo Entidade-Relacionamento (ER) e o detalhamento das tecnologias, está armazenada na pasta `docs/`.
+* **Falha de inicialização Java/Py4J:** Caso a primeira execução retorne erros relacionados ao Hadoop ou Py4J, clique no botão **Restart** (Reiniciar Kernel) no Jupyter e reexecute a célula. Esse procedimento limpa o cache da JVM e permite a injeção correta dos binários do Windows.
+* **Geração de Diretórios de Warehouse:** As pastas `spark-warehouse` e `iceberg_warehouse` são criadas automaticamente na raiz do projeto durante a execução. Elas estão mapeadas no `.gitignore` para evitar o versionamento de grandes volumes de dados locais.
 
-### Para rodar o site localmente:
+---
 
+## 📚 Documentação e Base de Conhecimento
+
+A documentação técnica detalhada, incluindo o Modelo Entidade-Relacionamento (ER) e as justificativas arquiteturais, está disponível no diretório `docs/`.
+
+**Servidor de documentação local:**
 ```bash
 uv run --python 3.11 mkdocs serve
 ```
+*Acesse o portal em: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)*
 
-Acesse: http://127.0.0.1:8000/
-
----
-
-### Para publicar a documentação online:
-
+**Deploy da documentação online:**
 ```bash
 uv run --python 3.11 mkdocs gh-deploy
 ```
-
-**Acesse o site público aqui:** Documentação do Projeto
+*Acesse a versão pública em: [Documentação do Projeto](https://TiagoPalacio.github.io/Projeto_Eng_de_dados/)*
 
 ---
 
-## 👥 Colaboração
+## 👥 Contribuição
 
-1. Abra uma **issue** para discutir melhorias ou correções  
-2. Crie um **branch**:
-```bash
-git checkout -b feature/minha-melhoria
-```
-3. Faça suas alterações e **commit**  
-4. Envie um **pull request** para a branch `main`  
+Sinta-se à vontade para contribuir com o projeto. Para isso, siga o fluxo padrão:
+
+1. Abra uma **Issue** relatando o bug ou propondo uma melhoria.
+2. Crie uma **Branch** a partir da `main` (`git checkout -b feature/minha-melhoria`).
+3. Realize os **Commits** das suas alterações.
+4. Abra um **Pull Request** detalhando as modificações realizadas.
 
 ---
 
 ## 👨‍💻 Autores
 
-- **Tiago Fritzen Palácio**  
-- **Bruno Tescke**  
-- **Gabriel Tomé**
+* **Tiago Fritzen Palácio**
+* **Bruno Tescke**
+* **Gabriel Tomé**
 
 ---
 
 ## 📄 Licença
 
-Este projeto é acadêmico e de código aberto.
+Projeto desenvolvido para fins acadêmicos e disponibilizado como código aberto.
 
 ---
 
-## 🔗 Referências
+## 🔗 Referências e Links Úteis
 
-- Apache Spark - Documentação Oficial  
-- Delta Lake - Guia Rápido PySpark  
-- Apache Iceberg - Spark Quickstart  
-- MkDocs Material  
+* **Processamento de Dados:**
+  * [Apache Spark - Documentação Oficial](https://spark.apache.org/docs/latest/)
+  * [PySpark API Reference](https://spark.apache.org/docs/latest/api/python/index.html)
+* **Formatos de Tabela Lakehouse:**
+  * [Delta Lake - Quickstart com PySpark](https://docs.delta.io/latest/quick-start.html)
+  * [Delta Lake - Tratamento de Exceções e AnalysisException](https://docs.delta.io/latest/delta-utility.html)
+  * [Apache Iceberg - Spark Quickstart](https://iceberg.apache.org/spark-quickstart/)
+  * [PyIceberg Documentation](https://py.iceberg.apache.org/)
+* **Ferramentas de Desenvolvimento:**
+  * [uv - Fast Python Package Manager](https://github.com/astral-sh/uv)
+  * [MkDocs Material](https://squidfunk.github.io/mkdocs-material/)
