@@ -14,7 +14,16 @@ Historicamente, as empresas começaram a jogar todos os seus dados em **Data Lak
 * O que acontece se uma gravação falhar no meio do caminho por falta de internet? O arquivo fica corrompido?
 * Como deletar os dados de um motorista específico (LGPD) no meio de um arquivo com 1 milhão de linhas?
 
-Arquivos estáticos por si só **não** sabem lidar com isso. O resultado? O lago de dados virava um pântano de dados corrompidos. 
+Arquivos estáticos por si só **não** sabem lidar com esses cenários. O resultado? O lago de dados virava um pântano de dados corrompidos. 
+
+### 📊 Comparativo: Data Lake vs. Delta Lake
+
+| Característica | Data Lake Tradicional (Parquet/CSV) | Delta Lake |
+| :--- | :--- | :--- |
+| **Garantia de Escrita** | Nenhuma (falhas geram arquivos corrompidos) | **ACID** (Tudo ou Nada / Rollback automático) |
+| **Evolução de Esquema** | Quebra o pipeline de leitura | Controlada nativamente (Schema Enforcement) |
+| **Atualizações (DML)** | Requer reescrita total da partição/tabela | Suporta `UPDATE`, `DELETE` e `MERGE` granulares |
+| **Histórico** | Inexistente (apenas o estado atual sobrevive) | Viagem no Tempo (Time Travel) via `_delta_log` |
 
 ---
 
@@ -36,26 +45,40 @@ Se o sistema tentar registrar uma nova corrida com 5 etapas e o servidor cair na
 Imagine que a coluna `id_motorista` espera um número inteiro, mas um erro no aplicativo envia a palavra `"João"`. O Delta Lake bloqueia essa gravação imediatamente, protegendo o pipeline de ser poluído com dados mal formatados.
 
 #### 3. 🔄 Upserts com `MERGE` (A Mágica da Atualização)
-Em logística, os status mudam a cada segundo. Com o comando `MERGE`, podemos dizer ao Delta: *"Olhe para esses dados novos que chegaram. Se o motorista já existir na tabela, apenas atualize a localização dele. Se ele não existir, insira-o como um novo motorista"*. Tudo isso em um único comando de alta performance.
+Em logística, os status mudam a cada segundo. Com o comando `MERGE`, o Delta atualiza registros existentes ou insere novos em uma única passada de alta performance.
 
 #### 4. 📜 Log de Transações (O Histórico Imutável)
-Nos bastidores, o Delta cria uma pastinha chamada `_delta_log`. Lá dentro, ele anota absolutamente tudo o que aconteceu na tabela: quem inseriu, quando inseriu e quais arquivos foram modificados. Isso é ouro para auditorias.
+Nos bastidores, o Delta cria uma pasta oculta chamada `_delta_log`. Lá dentro, ele anota em arquivos JSON absolutamente tudo o que aconteceu na tabela, atuando como o "cérebro" que gerencia a integridade dos arquivos Parquet.
 
 ---
 
 ## ⏳ Viagem no Tempo (Time Travel)
 
-Graças ao Log de Transações, o Delta Lake sabe exatamente como a tabela estava em qualquer momento do passado. 
+Graças ao Log de Transações (`_delta_log`), o Delta Lake sabe exatamente quais arquivos pertenciam a qual versão da tabela. Isso cria uma linha do tempo perfeita de todas as mutações do dado.
 
-Imagine o seguinte cenário: Um desenvolvedor júnior executou um `DELETE` sem a cláusula `WHERE` e apagou a tabela inteira de motoristas. Em um banco de dados comum, o desespero bateria. No Delta Lake, nós podemos simplesmente viajar no tempo.
+### Fluxo de Versionamento do Delta
+
+```mermaid
+graph LR
+    v0((v0<br>Carga Inicial)) -->|Insert| v1((v1<br>Novas Corridas))
+    v1 -->|Update/Merge| v2((v2<br>Status Atualizado))
+    v2 -->|Delete acidental!| v3((v3<br>Tabela Vazia))
+    
+    style v0 fill:#005288,color:#fff,stroke:#333
+    style v1 fill:#005288,color:#fff,stroke:#333
+    style v2 fill:#005288,color:#fff,stroke:#333
+    style v3 fill:#CC292B,color:#fff,stroke:#333
+```
+
+Imagine o cenário acima (versão 3): Um desenvolvedor júnior executou um `DELETE` sem a cláusula `WHERE` e apagou a tabela inteira de motoristas. Em um banco de dados comum, o desespero bateria. No Delta Lake, nós podemos simplesmente **viajar no tempo de volta para a versão 2**.
 
 !!! tip "Consultando o Passado"
-    Você pode consultar os dados como eles eram em uma versão específica ou até mesmo em um carimbo de data/hora específico.
+    Você pode consultar os dados como eles eram em uma versão de commit específica ou até mesmo em um carimbo de data/hora específico.
 
 **Exemplo em SQL:**
 ```sql
--- Consultando a tabela exatamente como ela estava na versão 5
-SELECT * FROM motoristas VERSION AS OF 5;
+-- Consultando a tabela exatamente como ela estava na versão 2 (antes do erro)
+SELECT * FROM motoristas VERSION AS OF 2;
 
 -- Consultando a tabela como ela estava ontem à tarde
 SELECT * FROM motoristas TIMESTAMP AS OF '2026-05-16 15:30:00';
@@ -63,17 +86,17 @@ SELECT * FROM motoristas TIMESTAMP AS OF '2026-05-16 15:30:00';
 
 **Exemplo na nossa API do PySpark:**
 ```python
-# Lendo o DataFrame de motoristas da versão 5
-df_motoristas_antigo = spark.read \
+# Lendo o DataFrame de motoristas restaurado da versão 2
+df_motoristas_seguro = spark.read \
     .format("delta") \
-    .option("versionAsOf", 5) \
+    .option("versionAsOf", 2) \
     .load("caminho/para/warehouse/motoristas")
 ```
 
-Essa funcionalidade não serve apenas para corrigir erros humanos, mas também para treinar modelos de Machine Learning reproduzíveis (garantindo que o modelo seja treinado exatamente com os dados que existiam naquela data específica).
+Essa funcionalidade não serve apenas para corrigir erros humanos, mas também para treinar modelos de Machine Learning reproduzíveis em nosso Lakehouse (garantindo que o modelo preditivo do SED seja treinado exatamente com os dados que existiam naquela data específica).
 
 ---
 
 ## 🚀 Próximos Passos
 
-Agora que você entende o papel vital do Delta Lake, convidamos você a abrir o notebook `delta_lakehouse.ipynb` no repositório. Lá, você verá todos esses conceitos (ACID, Merge, Time Travel) sendo executados na prática, linha por linha!
+Agora que você entende o papel vital do Delta Lake e como ele protege nossos dados, convidamos você a abrir o notebook `delta_lakehouse.ipynb` no repositório. Lá, você verá todos esses conceitos (ACID, Merge, Time Travel) sendo executados na prática, linha por linha!
