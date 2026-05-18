@@ -1,0 +1,837 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../spark/">
+      
+      
+        <link rel="next" href="../iceberg/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Delta Lake - Trabalho de Engenharia de Dados</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#delta-lake-trazendo-ordem-ao-caos-do-data-lake" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Trabalho de Engenharia de Dados" class="md-header__button md-logo" aria-label="Trabalho de Engenharia de Dados" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Trabalho de Engenharia de Dados
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Delta Lake
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Trabalho de Engenharia de Dados" class="md-nav__button md-logo" aria-label="Trabalho de Engenharia de Dados" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Trabalho de Engenharia de Dados
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contextualização
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apache Spark
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Delta Lake
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Delta Lake
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#o-problema-o-pantano-de-dados-data-swamp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛑 O Problema: O "Pântano de Dados" (Data Swamp)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛑 O Problema: O &#34;Pântano de Dados&#34; (Data Swamp)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comparativo-data-lake-vs-delta-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Comparativo: Data Lake vs. Delta Lake
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-solucao-conheca-o-delta-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🦸‍♂️ A Solução: Conheça o Delta Lake
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🦸‍♂️ A Solução: Conheça o Delta Lake">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#os-4-pilares-da-confiabilidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💎 Os 4 Pilares da Confiabilidade
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💎 Os 4 Pilares da Confiabilidade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-transacoes-acid-garantia-de-integridade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 🛡️ Transações ACID (Garantia de Integridade)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-schema-enforcement-o-porteiro-dos-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 🗂️ Schema Enforcement (O Porteiro dos Dados)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-upserts-com-merge-a-magica-da-atualizacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 🔄 Upserts com MERGE (A Mágica da Atualização)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-log-de-transacoes-o-historico-imutavel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 📜 Log de Transações (O Histórico Imutável)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#viagem-no-tempo-time-travel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⏳ Viagem no Tempo (Time Travel)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⏳ Viagem no Tempo (Time Travel)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fluxo-de-versionamento-do-delta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fluxo de Versionamento do Delta
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proximos-passos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Próximos Passos
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../iceberg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apache Iceberg
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#o-problema-o-pantano-de-dados-data-swamp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛑 O Problema: O "Pântano de Dados" (Data Swamp)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛑 O Problema: O &#34;Pântano de Dados&#34; (Data Swamp)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comparativo-data-lake-vs-delta-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Comparativo: Data Lake vs. Delta Lake
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-solucao-conheca-o-delta-lake" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🦸‍♂️ A Solução: Conheça o Delta Lake
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🦸‍♂️ A Solução: Conheça o Delta Lake">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#os-4-pilares-da-confiabilidade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💎 Os 4 Pilares da Confiabilidade
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💎 Os 4 Pilares da Confiabilidade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-transacoes-acid-garantia-de-integridade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 🛡️ Transações ACID (Garantia de Integridade)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-schema-enforcement-o-porteiro-dos-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 🗂️ Schema Enforcement (O Porteiro dos Dados)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-upserts-com-merge-a-magica-da-atualizacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 🔄 Upserts com MERGE (A Mágica da Atualização)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-log-de-transacoes-o-historico-imutavel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 📜 Log de Transações (O Histórico Imutável)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#viagem-no-tempo-time-travel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⏳ Viagem no Tempo (Time Travel)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⏳ Viagem no Tempo (Time Travel)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fluxo-de-versionamento-do-delta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fluxo de Versionamento do Delta
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proximos-passos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Próximos Passos
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="delta-lake-trazendo-ordem-ao-caos-do-data-lake">🌊 Delta Lake: Trazendo Ordem ao Caos do Data Lake</h1>
+<p>Seja bem-vindo(a) à documentação da nossa camada de armazenamento! Se você não está familiarizado com engenharia de dados, pode estar se perguntando: <em>"Por que não simplesmente salvar os dados em arquivos normais ou em um banco de dados tradicional?"</em></p>
+<p>Nesta página, vamos desmistificar o <strong>Delta Lake</strong> e explicar por que ele é uma peça fundamental no motor do nosso <strong>Sistema Eletrônico de Despachos (SED)</strong>.</p>
+<hr />
+<h2 id="o-problema-o-pantano-de-dados-data-swamp">🛑 O Problema: O "Pântano de Dados" (Data Swamp)</h2>
+<p>Historicamente, as empresas começaram a jogar todos os seus dados em <strong>Data Lakes</strong> (armazenamentos baratos, geralmente em arquivos <code>.parquet</code> ou <code>.csv</code>). Isso era ótimo para reduzir custos, mas criava um pesadelo logístico:</p>
+<ul>
+<li>O que acontece se dois motoristas atualizarem seus status ao mesmo tempo no mesmo arquivo?</li>
+<li>O que acontece se uma gravação falhar no meio do caminho por falta de internet? O arquivo fica corrompido?</li>
+<li>Como deletar os dados de um motorista específico (LGPD) no meio de um arquivo com 1 milhão de linhas?</li>
+</ul>
+<p>Arquivos estáticos por si só <strong>não</strong> sabem lidar com esses cenários. O resultado? O lago de dados virava um pântano de dados corrompidos. </p>
+<h3 id="comparativo-data-lake-vs-delta-lake">📊 Comparativo: Data Lake vs. Delta Lake</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Característica</th>
+<th style="text-align: left;">Data Lake Tradicional (Parquet/CSV)</th>
+<th style="text-align: left;">Delta Lake</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Garantia de Escrita</strong></td>
+<td style="text-align: left;">Nenhuma (falhas geram arquivos corrompidos)</td>
+<td style="text-align: left;"><strong>ACID</strong> (Tudo ou Nada / Rollback automático)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Evolução de Esquema</strong></td>
+<td style="text-align: left;">Quebra o pipeline de leitura</td>
+<td style="text-align: left;">Controlada nativamente (Schema Enforcement)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Atualizações (DML)</strong></td>
+<td style="text-align: left;">Requer reescrita total da partição/tabela</td>
+<td style="text-align: left;">Suporta <code>UPDATE</code>, <code>DELETE</code> e <code>MERGE</code> granulares</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Histórico</strong></td>
+<td style="text-align: left;">Inexistente (apenas o estado atual sobrevive)</td>
+<td style="text-align: left;">Viagem no Tempo (Time Travel) via <code>_delta_log</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="a-solucao-conheca-o-delta-lake">🦸‍♂️ A Solução: Conheça o Delta Lake</h2>
+<p>O <strong>Delta Lake</strong> é uma camada de armazenamento open-source que "envelopa" esses arquivos estáticos (Parquet) e adiciona a eles os "superpoderes" de um banco de dados relacional tradicional.</p>
+<p>!!! info "O Delta Lake no nosso Projeto (SED)"
+    No nosso projeto, o Apache Spark faz o processamento pesado, mas é o Delta Lake que garante que os dados de <strong>corridas</strong> e <strong>motoristas</strong> sejam salvos de forma segura, rastreável e sem duplicações em nossa máquina local.</p>
+<h3 id="os-4-pilares-da-confiabilidade">💎 Os 4 Pilares da Confiabilidade</h3>
+<p>Para o nosso cenário de logística, o Delta nos fornece quatro garantias essenciais:</p>
+<h4 id="1-transacoes-acid-garantia-de-integridade">1. 🛡️ Transações ACID (Garantia de Integridade)</h4>
+<p>Se o sistema tentar registrar uma nova corrida com 5 etapas e o servidor cair na 4ª etapa, o Delta Lake desfaz (rollback) tudo automaticamente. Ou a operação acontece por inteiro, ou não acontece. Nada de dados "pela metade".</p>
+<h4 id="2-schema-enforcement-o-porteiro-dos-dados">2. 🗂️ Schema Enforcement (O Porteiro dos Dados)</h4>
+<p>Imagine que a coluna <code>id_motorista</code> espera um número inteiro, mas um erro no aplicativo envia a palavra <code>"João"</code>. O Delta Lake bloqueia essa gravação imediatamente, protegendo o pipeline de ser poluído com dados mal formatados.</p>
+<h4 id="3-upserts-com-merge-a-magica-da-atualizacao">3. 🔄 Upserts com <code>MERGE</code> (A Mágica da Atualização)</h4>
+<p>Em logística, os status mudam a cada segundo. Com o comando <code>MERGE</code>, o Delta atualiza registros existentes ou insere novos em uma única passada de alta performance.</p>
+<h4 id="4-log-de-transacoes-o-historico-imutavel">4. 📜 Log de Transações (O Histórico Imutável)</h4>
+<p>Nos bastidores, o Delta cria uma pasta oculta chamada <code>_delta_log</code>. Lá dentro, ele anota em arquivos JSON absolutamente tudo o que aconteceu na tabela, atuando como o "cérebro" que gerencia a integridade dos arquivos Parquet.</p>
+<hr />
+<h2 id="viagem-no-tempo-time-travel">⏳ Viagem no Tempo (Time Travel)</h2>
+<p>Graças ao Log de Transações (<code>_delta_log</code>), o Delta Lake sabe exatamente quais arquivos pertenciam a qual versão da tabela. Isso cria uma linha do tempo perfeita de todas as mutações do dado.</p>
+<h3 id="fluxo-de-versionamento-do-delta">Fluxo de Versionamento do Delta</h3>
+<pre class="mermaid"><code>graph LR
+    v0((v0&lt;br&gt;Carga Inicial)) --&gt;|Insert| v1((v1&lt;br&gt;Novas Corridas))
+    v1 --&gt;|Update/Merge| v2((v2&lt;br&gt;Status Atualizado))
+    v2 --&gt;|Delete acidental!| v3((v3&lt;br&gt;Tabela Vazia))
+
+    style v0 fill:#005288,color:#fff,stroke:#333
+    style v1 fill:#005288,color:#fff,stroke:#333
+    style v2 fill:#005288,color:#fff,stroke:#333
+    style v3 fill:#CC292B,color:#fff,stroke:#333</code></pre>
+<p>Imagine o cenário acima (versão 3): Um desenvolvedor júnior executou um <code>DELETE</code> sem a cláusula <code>WHERE</code> e apagou a tabela inteira de motoristas. Em um banco de dados comum, o desespero bateria. No Delta Lake, nós podemos simplesmente <strong>viajar no tempo de volta para a versão 2</strong>.</p>
+<p>!!! tip "Consultando o Passado"
+    Você pode consultar os dados como eles eram em uma versão de commit específica ou até mesmo em um carimbo de data/hora específico.</p>
+<p><strong>Exemplo em SQL:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Consultando a tabela exatamente como ela estava na versão 2 (antes do erro)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">motoristas</span><span class="w"> </span><span class="k">VERSION</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">OF</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+
+<span class="c1">-- Consultando a tabela como ela estava ontem à tarde</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">motoristas</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">OF</span><span class="w"> </span><span class="s1">&#39;2026-05-16 15:30:00&#39;</span><span class="p">;</span>
+</code></pre></div></p>
+<p><strong>Exemplo na nossa API do PySpark:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Lendo o DataFrame de motoristas restaurado da versão 2</span>
+<span class="n">df_motoristas_seguro</span> <span class="o">=</span> <span class="n">spark</span><span class="o">.</span><span class="n">read</span> \
+    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;delta&quot;</span><span class="p">)</span> \
+    <span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;versionAsOf&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> \
+    <span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;caminho/para/warehouse/motoristas&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<p>Essa funcionalidade não serve apenas para corrigir erros humanos, mas também para treinar modelos de Machine Learning reproduzíveis em nosso Lakehouse (garantindo que o modelo preditivo do SED seja treinado exatamente com os dados que existiam naquela data específica).</p>
+<hr />
+<h2 id="proximos-passos">🚀 Próximos Passos</h2>
+<p>Agora que você entende o papel vital do Delta Lake e como ele protege nossos dados, convidamos você a abrir o notebook <code>delta_lakehouse.ipynb</code> no repositório. Lá, você verá todos esses conceitos (ACID, Merge, Time Travel) sendo executados na prática, linha por linha!</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

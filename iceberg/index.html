@@ -1,0 +1,702 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../delta/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Apache Iceberg - Trabalho de Engenharia de Dados</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#apache-iceberg-o-padrao-ouro-para-escala-macica" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Trabalho de Engenharia de Dados" class="md-header__button md-logo" aria-label="Trabalho de Engenharia de Dados" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Trabalho de Engenharia de Dados
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Apache Iceberg
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Trabalho de Engenharia de Dados" class="md-nav__button md-logo" aria-label="Trabalho de Engenharia de Dados" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Trabalho de Engenharia de Dados
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contextualização
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apache Spark
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../delta/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Delta Lake
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apache Iceberg
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Apache Iceberg
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-origem-o-problema-da-netflix-e-do-hive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎬 A Origem: O Problema da Netflix (e do Hive)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎬 A Origem: O Problema da Netflix (e do Hive)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comparativo-de-arquitetura-de-leitura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Comparativo de Arquitetura de Leitura
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#os-diferenciais-tecnologicos-no-nosso-sistema-sed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Os Diferenciais Tecnológicos no nosso Sistema (SED)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Os Diferenciais Tecnológicos no nosso Sistema (SED)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-evolucao-total-do-esquema-schema-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 🧬 Evolução Total do Esquema (Schema Evolution)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-particionamento-oculto-hidden-partitioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 🕵️‍♂️ Particionamento Oculto (Hidden Partitioning)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-isolamento-de-snapshot-snapshot-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 📸 Isolamento de Snapshot (Snapshot Isolation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caso-de-uso-armazenamento-de-longo-prazo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 Caso de Uso: Armazenamento de Longo Prazo
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-origem-o-problema-da-netflix-e-do-hive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎬 A Origem: O Problema da Netflix (e do Hive)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎬 A Origem: O Problema da Netflix (e do Hive)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#comparativo-de-arquitetura-de-leitura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Comparativo de Arquitetura de Leitura
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#os-diferenciais-tecnologicos-no-nosso-sistema-sed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Os Diferenciais Tecnológicos no nosso Sistema (SED)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Os Diferenciais Tecnológicos no nosso Sistema (SED)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-evolucao-total-do-esquema-schema-evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 🧬 Evolução Total do Esquema (Schema Evolution)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-particionamento-oculto-hidden-partitioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 🕵️‍♂️ Particionamento Oculto (Hidden Partitioning)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-isolamento-de-snapshot-snapshot-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 📸 Isolamento de Snapshot (Snapshot Isolation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caso-de-uso-armazenamento-de-longo-prazo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 Caso de Uso: Armazenamento de Longo Prazo
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="apache-iceberg-o-padrao-ouro-para-escala-macica">🧊 Apache Iceberg: O Padrão Ouro para Escala Maciça</h1>
+<p>Bem-vindo(a) à documentação do nosso segundo pilar de armazenamento! Se o Delta Lake é a nossa ferramenta de escolha para transações rápidas e log de operações, o <strong>Apache Iceberg</strong> é a nossa resposta para <strong>escalabilidade extrema</strong> e evolução arquitetural de longo prazo.</p>
+<hr />
+<h2 id="a-origem-o-problema-da-netflix-e-do-hive">🎬 A Origem: O Problema da Netflix (e do Hive)</h2>
+<p>Para entender o verdadeiro valor do Iceberg, precisamos voltar um pouco no tempo. Antigamente, o padrão da indústria para organizar Data Lakes era o Apache Hive. O Hive rastreava os dados olhando puramente para <strong>pastas</strong> (diretórios físicos) dentro do servidor. </p>
+<p>!!! warning "O Gargalo dos Diretórios"
+    Quando a Netflix tentou processar <em>petabytes</em> de dados, o processo de descobrir quais arquivos ler dentro das pastas demorava mais do que a leitura em si! Além disso, o sistema de arquivos não garantia segurança: se alguém alterasse um arquivo enquanto outro estava lendo, o resultado era um erro crítico.</p>
+<p>O <strong>Apache Iceberg</strong> foi criado pela Netflix (e depois doado para a fundação Apache) para resolver exatamente esse gargalo de performance. Ele abandona a leitura lenta de pastas físicas e adota uma <strong>árvore inteligente de metadados</strong>.</p>
+<h3 id="comparativo-de-arquitetura-de-leitura">📊 Comparativo de Arquitetura de Leitura</h3>
+<pre class="mermaid"><code>graph LR
+    subgraph O Padrão Antigo: Apache Hive
+        H1[Engine&lt;br&gt;Spark/Presto] --&gt;|Lê Diretório| H2[/pasta_ano=2026/]
+        H2 --&gt;|Lê Subdiretório| H3[/pasta_mes=05/]
+        H3 --&gt;|Varre TUDO| H4[Abre e lê 10.000&lt;br&gt;arquivos para achar o dado]
+    end
+
+    subgraph A Inovação: Apache Iceberg
+        I1[Engine&lt;br&gt;Spark/Presto] --&gt;|Consulta Árvore| I2[Arquivo de Metadados&lt;br&gt;Manifest List]
+        I2 --&gt;|Ponteiro Direto| I3[Lê apenas o 1 arquivo&lt;br&gt;Parquet necessário]
+    end
+
+    style H4 fill:#CC292B,color:#fff,stroke:#333
+    style I3 fill:#00AEEF,color:#fff,stroke:#333</code></pre>
+<hr />
+<h2 id="os-diferenciais-tecnologicos-no-nosso-sistema-sed">🚀 Os Diferenciais Tecnológicos no nosso Sistema (SED)</h2>
+<p>No contexto do nosso aplicativo de logística, o Iceberg brilha em três áreas fundamentais que facilitam a vida dos Engenheiros de Dados:</p>
+<h3 id="1-evolucao-total-do-esquema-schema-evolution">1. 🧬 Evolução Total do Esquema (Schema Evolution)</h3>
+<p>Sistemas de logística mudam o tempo todo. Hoje, a tabela <code>corridas</code> pode ter apenas o <code>id_motorista</code>. Amanhã, o negócio exige adicionar <code>tipo_veiculo</code>, renomear <code>valor_total</code> para <code>tarifa_base</code> e mudar um tipo de dado de <code>INT</code> para <code>BIGINT</code>.</p>
+<ul>
+<li><strong>O jeito antigo:</strong> Você precisaria reconstruir a tabela inteira, o que custa processamento, tempo e dinheiro.</li>
+<li><strong>O jeito Iceberg:</strong> As alterações são feitas apenas nos metadados. É possível adicionar, remover, renomear ou reordenar colunas de forma instantânea, sem a necessidade de reescrever um único arquivo de dados antigo.</li>
+</ul>
+<h3 id="2-particionamento-oculto-hidden-partitioning">2. 🕵️‍♂️ Particionamento Oculto (Hidden Partitioning)</h3>
+<p>Particionar dados (por exemplo, agrupar corridas por mês) deixa as consultas infinitamente mais rápidas. O problema é que, tradicionalmente, o desenvolvedor ou analista precisava saber exatamente como a tabela estava particionada e incluir filtros manuais na query para não derrubar o banco.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Característica</th>
+<th style="text-align: left;">Padrão Tradicional (Hive/Spark)</th>
+<th style="text-align: left;">Apache Iceberg (Hidden)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Geração da Partição</strong></td>
+<td style="text-align: left;">Exige criação de nova coluna física (ex: <code>mes_corrida</code>)</td>
+<td style="text-align: left;">Gerado no metadado via transformação (<code>month(data)</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Regra de Consulta</strong></td>
+<td style="text-align: left;">Analista DEVE usar <code>WHERE mes_corrida = '05'</code></td>
+<td style="text-align: left;">Analista usa a data natural <code>WHERE data = '2026-05-17'</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Risco de Performance</strong></td>
+<td style="text-align: left;">Alto (Esquecer o filtro varre a tabela inteira - <em>Full Scan</em>)</td>
+<td style="text-align: left;">Nulo (Iceberg traduz o filtro e acha a partição sozinho)</td>
+</tr>
+</tbody>
+</table>
+<p>!!! success "Magia sob o capô"
+    Com o Particionamento Oculto, se você consultar <code>SELECT * FROM corridas WHERE data_corrida = '2026-05-17'</code>, o próprio Iceberg entende a relação temporal através de seus metadados e puxa apenas a partição correta de maio de 2026, ignorando o resto do Lakehouse automaticamente.</p>
+<h3 id="3-isolamento-de-snapshot-snapshot-isolation">3. 📸 Isolamento de Snapshot (Snapshot Isolation)</h3>
+<p>Em um sistema de despachos 24/7, teremos fluxos contínuos escrevendo novos dados de motoristas, enquanto analistas de BI tentam consolidar relatórios mensais ao mesmo tempo.
+O Iceberg garante que as leituras sejam 100% isoladas das escritas. O usuário que está consultando sempre verá uma "foto" (snapshot) consistente da tabela, mesmo que bilhões de linhas estejam sendo inseridas por debaixo dos panos naquele exato momento.</p>
+<hr />
+<h2 id="caso-de-uso-armazenamento-de-longo-prazo">📦 Caso de Uso: Armazenamento de Longo Prazo</h2>
+<p>No <strong>Sistema Eletrônico de Despachos (SED)</strong>, posicionamos o Apache Iceberg como o formato ideal para o <strong>histórico de longo prazo</strong>. </p>
+<p>Como os dados históricos crescem vertiginosamente com o passar dos anos, e as regras de negócio invariavelmente mudam, a capacidade do Iceberg de lidar com alto volume e evoluir o esquema sem reescrita pesada o torna a escolha definitiva para nossa camada de dados "frios/mornos".</p>
+<p>!!! tip "Veja na Prática"
+    Quer ver como a evolução de esquema e as árvores de metadados funcionam a nível de código?
+    Abra o notebook <code>iceberg_lakehouse.ipynb</code> na raiz do nosso repositório e execute os testes práticos locais usando o PySpark!</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
